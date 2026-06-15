@@ -1,145 +1,340 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>US Contact Distribution</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
+import { useState } from "react";
 
-<body style="margin:0;font-family:system-ui;">
+const exerciseDemos = {
+  "Barbell Bench Press": "rT7DgCr-3pg",
+  "Overhead Press (BB or DB)": "2yjwXTZQDDI",
+  "Incline Dumbbell Press": "8iPEnn-ltC8",
+  "Lateral Raises": "3VcKaXpzqRo",
+  "Tricep Dips or Pushdowns": "0326dy_-CzM",
+  "Plank": "ASdvSqalmYA",
+  "Deadlift": "op9kVnSso6Q",
+  "Pull-Ups / Lat Pulldown": "eGo4IYlbE5g",
+  "Barbell or DB Row": "roCP2_LMkso",
+  "Face Pulls": "rep-qVOkqgk",
+  "Barbell or DB Curl": "ykJmrZ5v0Oo",
+  "Hammer Curls": "zC3nLlEvin4",
+  "Barbell Back Squat": "ultWZbUMPL8",
+  "Romanian Deadlift": "JCXUYuzwNrM",
+  "Leg Press": "IZxyjW7MPJQ",
+  "Walking Lunges": "L8fvypPrzzs",
+  "Standing Calf Raises": "gwLzBJYoWlA",
+  "Ab Wheel Rollout or Hanging Leg Raise": "p3clBwvpxrU",
+  "Trap Bar Deadlift or Conv. Deadlift": "oiDczs9j75E",
+  "Chest-Supported DB Row": "dI5BJ2bWKrA",
+  "Cable Row (close grip)": "GZbfZ033f74",
+  "Neutral-Grip Pull-Ups": "eGo4IYlbE5g",
+  "Incline DB Curl": "soxrZlIl35U",
+  "Dead Bug": "g_BYB0R-4Ws",
+  "Dumbbell Bench Press": "VmB1G1K7v94",
+  "Seated DB Shoulder Press": "qEwKCR5JCog",
+  "Cable Fly or Pec Deck": "Iwe6AmxVf7o",
+  "Arnold Press": "6Z15_WdXmVw",
+  "Overhead Tricep Extension": "nRiJVZDpdL0",
+  "Cable Lateral Raise": "PPF4bAFkCd4",
+  "Front Squat or Goblet Squat": "ssUSgTorgV4",
+  "Bulgarian Split Squat": "2C-uNgKwPLE",
+  "Leg Curl (machine or Nordic)": "1Tq3QdYUuHs",
+  "Leg Extension": "YyvSfVjQeL0",
+  "Seated Calf Raises": "JbyjNymZOt0",
+  "Cable Crunch or Decline Sit-Up": "AV5PmoPY_hw",
+};
 
-<div id="map-container" style="max-width:900px;margin:auto;">
+const workouts = {
+  A: {
+    label: "Workout A",
+    color: "#1a6ef5",
+    accent: "#e8f0ff",
+    days: [
+      {
+        day: "Day 1 — Monday",
+        focus: "Push + Core",
+        exercises: [
+          { name: "Barbell Bench Press", sets: "4", reps: "6–8", rest: "2–3 min", notes: "Control the descent, full range of motion" },
+          { name: "Overhead Press (BB or DB)", sets: "3", reps: "8–10", rest: "90 sec", notes: "Brace core, no excessive back arch" },
+          { name: "Incline Dumbbell Press", sets: "3", reps: "10–12", rest: "90 sec", notes: "Slight incline (30°) to target upper chest" },
+          { name: "Lateral Raises", sets: "3", reps: "12–15", rest: "60 sec", notes: "Slow and controlled, no swinging" },
+          { name: "Tricep Dips or Pushdowns", sets: "3", reps: "10–12", rest: "60 sec", notes: "Keep elbows tucked" },
+          { name: "Plank", sets: "3", reps: "30–45 sec", rest: "45 sec", notes: "Neutral spine, breathe steadily" },
+        ],
+      },
+      {
+        day: "Day 2 — Wednesday",
+        focus: "Pull + Biceps",
+        exercises: [
+          { name: "Deadlift", sets: "4", reps: "4–6", rest: "3 min", notes: "Hinge at hips, bar stays close to body" },
+          { name: "Pull-Ups / Lat Pulldown", sets: "4", reps: "6–10", rest: "2 min", notes: "Full stretch at top, drive elbows down" },
+          { name: "Barbell or DB Row", sets: "3", reps: "8–10", rest: "90 sec", notes: "Chest supported or braced for lower back" },
+          { name: "Face Pulls", sets: "3", reps: "12–15", rest: "60 sec", notes: "Pull to forehead, elbows high" },
+          { name: "Barbell or DB Curl", sets: "3", reps: "10–12", rest: "60 sec", notes: "Don't swing; squeeze at the top" },
+          { name: "Hammer Curls", sets: "2", reps: "12", rest: "60 sec", notes: "Targets brachialis for arm thickness" },
+        ],
+      },
+      {
+        day: "Day 3 — Friday",
+        focus: "Legs + Abs",
+        exercises: [
+          { name: "Barbell Back Squat", sets: "4", reps: "6–8", rest: "2–3 min", notes: "Depth to parallel or below, knees track toes" },
+          { name: "Romanian Deadlift", sets: "3", reps: "8–10", rest: "2 min", notes: "Feel the hamstring stretch, flat back" },
+          { name: "Leg Press", sets: "3", reps: "10–12", rest: "90 sec", notes: "Feet shoulder-width, don't lock out knees" },
+          { name: "Walking Lunges", sets: "3", reps: "10 each leg", rest: "90 sec", notes: "Keep torso upright" },
+          { name: "Standing Calf Raises", sets: "4", reps: "15–20", rest: "60 sec", notes: "Full range — heel all the way down" },
+          { name: "Ab Wheel Rollout or Hanging Leg Raise", sets: "3", reps: "10–12", rest: "60 sec", notes: "Controlled movement, no kipping" },
+        ],
+      },
+    ],
+  },
+  B: {
+    label: "Workout B",
+    color: "#d94f00",
+    accent: "#fff0e8",
+    days: [
+      {
+        day: "Day 1 — Monday",
+        focus: "Pull + Core",
+        exercises: [
+          { name: "Trap Bar Deadlift or Conv. Deadlift", sets: "4", reps: "5–6", rest: "3 min", notes: "Variation to give your back a slight change of stimulus" },
+          { name: "Chest-Supported DB Row", sets: "4", reps: "8–10", rest: "90 sec", notes: "No momentum, retract scapula fully" },
+          { name: "Cable Row (close grip)", sets: "3", reps: "10–12", rest: "90 sec", notes: "Squeeze shoulder blades together" },
+          { name: "Neutral-Grip Pull-Ups", sets: "3", reps: "6–10", rest: "2 min", notes: "Easier on wrists and elbows" },
+          { name: "Incline DB Curl", sets: "3", reps: "10–12", rest: "60 sec", notes: "Excellent stretch on the long head of bicep" },
+          { name: "Dead Bug", sets: "3", reps: "8 each side", rest: "45 sec", notes: "Keeps lower back flat throughout" },
+        ],
+      },
+      {
+        day: "Day 2 — Wednesday",
+        focus: "Push + Shoulders",
+        exercises: [
+          { name: "Dumbbell Bench Press", sets: "4", reps: "8–10", rest: "2 min", notes: "Greater range of motion than barbell" },
+          { name: "Seated DB Shoulder Press", sets: "3", reps: "8–10", rest: "90 sec", notes: "Don't flare elbows too wide" },
+          { name: "Cable Fly or Pec Deck", sets: "3", reps: "12–15", rest: "60 sec", notes: "Focus on the squeeze, light weight" },
+          { name: "Arnold Press", sets: "3", reps: "10–12", rest: "90 sec", notes: "Hits all three delt heads" },
+          { name: "Overhead Tricep Extension", sets: "3", reps: "10–12", rest: "60 sec", notes: "Long head stretch is key for size" },
+          { name: "Cable Lateral Raise", sets: "3", reps: "12–15", rest: "60 sec", notes: "Constant tension vs dumbbells" },
+        ],
+      },
+      {
+        day: "Day 3 — Friday",
+        focus: "Legs + Abs",
+        exercises: [
+          { name: "Front Squat or Goblet Squat", sets: "4", reps: "6–10", rest: "2–3 min", notes: "More quad dominant, great for depth" },
+          { name: "Bulgarian Split Squat", sets: "3", reps: "8–10 each leg", rest: "90 sec", notes: "Rear foot elevated, front knee tracks toes" },
+          { name: "Leg Curl (machine or Nordic)", sets: "3", reps: "10–12", rest: "90 sec", notes: "Isolates hamstrings directly" },
+          { name: "Leg Extension", sets: "3", reps: "12–15", rest: "60 sec", notes: "Terminal extension for quad sweep" },
+          { name: "Seated Calf Raises", sets: "4", reps: "12–15", rest: "60 sec", notes: "Targets soleus (different from standing)" },
+          { name: "Cable Crunch or Decline Sit-Up", sets: "3", reps: "12–15", rest: "60 sec", notes: "Add resistance for hypertrophy" },
+        ],
+      },
+    ],
+  },
+};
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin:10px;">
-    <h3 style="margin:0;">US Contact Distribution</h3>
-    <div style="font-size:12px; display:flex; align-items:center; gap:6px;">
-      <span>Low</span>
-      <div style="width:120px;height:10px;background:linear-gradient(to right,#DCEBED,#B3C9CD,#4F6F75);border-radius:4px;"></div>
-      <span>High</span>
+const schedule = [
+  { week: "Week 1", order: ["A", "B", "A"] },
+  { week: "Week 2", order: ["B", "A", "B"] },
+];
+
+function ExerciseCard({ ex, color, accent }) {
+  const [expanded, setExpanded] = useState(false);
+  const videoId = exerciseDemos[ex.name];
+  const ytUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : null;
+  const thumbUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+
+  return (
+    <div style={{
+      background: "#fff",
+      borderRadius: 10,
+      borderLeft: `4px solid ${color}`,
+      boxShadow: expanded ? "0 4px 16px #00000014" : "0 1px 4px #0000000a",
+      overflow: "hidden",
+      transition: "box-shadow 0.2s",
+    }}>
+      {/* Clickable header */}
+      <div
+        onClick={() => setExpanded(!expanded)}
+        style={{ padding: "14px 16px", cursor: "pointer", userSelect: "none" }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+          <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: "#111", flex: 1 }}>{ex.name}</p>
+          <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
+            <span style={{ background: accent, color: color, borderRadius: 5, padding: "3px 8px", fontSize: 12, fontWeight: 700 }}>
+              {ex.sets}×{ex.reps}
+            </span>
+            <span style={{ background: "#f0f0f0", color: "#666", borderRadius: 5, padding: "3px 8px", fontSize: 12, fontWeight: 600 }}>
+              {ex.rest}
+            </span>
+            <span style={{
+              width: 22, height: 22, borderRadius: "50%",
+              background: expanded ? color : "#f0f0f0",
+              color: expanded ? "#fff" : "#999",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 13, fontWeight: 700,
+              transition: "all 0.2s",
+              flexShrink: 0,
+            }}>
+              {expanded ? "▾" : "▸"}
+            </span>
+          </div>
+        </div>
+        <p style={{ margin: "6px 0 0", fontSize: 12.5, color: "#777", lineHeight: 1.4 }}>💡 {ex.notes}</p>
+      </div>
+
+      {/* Expanded: thumbnail + YouTube link */}
+      {expanded && ytUrl && (
+        <div style={{ borderTop: "1px solid #f0f0f0" }}>
+          <a
+            href={ytUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none", display: "block" }}
+          >
+            {/* Thumbnail with play button overlay */}
+            <div style={{ position: "relative" }}>
+              <img
+                src={thumbUrl}
+                alt={`${ex.name} demo`}
+                style={{ width: "100%", display: "block", maxHeight: 200, objectFit: "cover" }}
+              />
+              {/* Play button overlay */}
+              <div style={{
+                position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "rgba(0,0,0,0.25)",
+              }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: "50%",
+                  background: "#FF0000",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+                }}>
+                  <span style={{ color: "#fff", fontSize: 20, marginLeft: 4 }}>▶</span>
+                </div>
+              </div>
+            </div>
+            {/* Open on YouTube label */}
+            <div style={{
+              padding: "10px 16px",
+              background: "#fafafa",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: color }}>Watch on YouTube</span>
+              <span style={{ fontSize: 12, color: "#aaa" }}>Opens in browser →</span>
+            </div>
+          </a>
+        </div>
+      )}
     </div>
-  </div>
+  );
+}
 
-  <svg id="map" viewBox="0 0 960 600" style="width:100%;"></svg>
-</div>
+export default function WorkoutApp() {
+  const [activeWorkout, setActiveWorkout] = useState("A");
+  const [openDay, setOpenDay] = useState(0);
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
+  const workout = workouts[activeWorkout];
 
-<script>
-const data = {
-  TN:51,CA:41,TX:27,NY:25,FL:22,IL:19,MA:18,NJ:18,GA:11,PA:11,MD:9,KY:9,OH:9,NC:7,
-  MI:6,WI:6,VA:5,MO:5,MN:4,SC:3,CO:3,AZ:3,WA:3,MS:2,CT:2,NV:2,OK:2,IN:2,KS:2,
-  DE:1,AL:1,NM:1,NE:1,ME:1,DC:1,ND:1,SD:1,IA:1,WV:1,AR:1,OR:1,AK:1,VT:1,LA:1,
-  PR:3, VI:1
-};
+  return (
+    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", background: "#f7f7f7", minHeight: "100vh", padding: "0 0 60px 0" }}>
+      {/* Header */}
+      <div style={{ background: "#111", color: "#fff", padding: "28px 24px 20px" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <p style={{ margin: 0, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#888", marginBottom: 6 }}>3-Day Full Body Split</p>
+          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.5px" }}>Weekly Workout Rotation</h1>
+          <p style={{ margin: "6px 0 0", fontSize: 13, color: "#888" }}>Tap any exercise to see a demo</p>
+          <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+            {["A", "B"].map((w) => (
+              <button
+                key={w}
+                onClick={() => { setActiveWorkout(w); setOpenDay(0); }}
+                style={{
+                  padding: "8px 22px", borderRadius: 6, border: "none",
+                  fontWeight: 600, fontSize: 14, cursor: "pointer",
+                  background: activeWorkout === w ? workouts[w].color : "#2a2a2a",
+                  color: "#fff", transition: "background 0.2s",
+                }}
+              >
+                Workout {w}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-const abbrevToName = {
-  AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',
-  DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',
-  KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',
-  MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',
-  NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',
-  OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',
-  TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',
-  WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',DC:'District of Columbia'
-};
+      <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 16px" }}>
+        {/* Schedule Banner */}
+        <div style={{ background: workout.accent, border: `1.5px solid ${workout.color}22`, borderRadius: 10, padding: "14px 18px", marginTop: 20, marginBottom: 8 }}>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: workout.color, marginBottom: 6 }}>Alternating Weekly Schedule</p>
+          <div style={{ display: "flex", gap: 18 }}>
+            {schedule.map((s) => (
+              <div key={s.week}>
+                <p style={{ margin: "0 0 2px", fontSize: 12, color: "#666", fontWeight: 500 }}>{s.week}</p>
+                <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#111" }}>
+                  {s.order.map((o, i) => (
+                    <span key={i}>
+                      <span style={{ color: o === activeWorkout ? workout.color : "#aaa" }}>{o}</span>
+                      {i < 2 && <span style={{ color: "#ccc" }}> · </span>}
+                    </span>
+                  ))}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-const values = {};
-Object.entries(data).forEach(([k,v])=>{
-  if(abbrevToName[k]) values[abbrevToName[k]] = v;
-});
+        {/* Day Tabs */}
+        <div style={{ display: "flex", gap: 8, marginTop: 18, marginBottom: 14 }}>
+          {workout.days.map((d, i) => (
+            <button
+              key={i}
+              onClick={() => setOpenDay(i)}
+              style={{
+                flex: 1, padding: "9px 4px", borderRadius: 7,
+                border: openDay === i ? `2px solid ${workout.color}` : "2px solid #e0e0e0",
+                background: openDay === i ? workout.color : "#fff",
+                color: openDay === i ? "#fff" : "#555",
+                fontWeight: 600, fontSize: 12, cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              Day {i + 1}
+            </button>
+          ))}
+        </div>
 
-const tooltip = d3.select("body")
-  .append("div")
-  .style("position", "absolute")
-  .style("background", "#111")
-  .style("color", "#fff")
-  .style("padding", "6px 10px")
-  .style("border-radius", "6px")
-  .style("font-size", "12px")
-  .style("pointer-events","none")
-  .style("opacity", 0);
+        {/* Active Day */}
+        {workout.days.map((day, i) =>
+          openDay === i ? (
+            <div key={i}>
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ margin: 0, fontSize: 13, color: "#888", fontWeight: 500 }}>{day.day}</p>
+                <h2 style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 700, color: "#111" }}>
+                  <span style={{ color: workout.color }}>{day.focus.split(" ")[0]}</span>{" "}
+                  {day.focus.split(" ").slice(1).join(" ")}
+                </h2>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {day.exercises.map((ex, j) => (
+                  <ExerciseCard key={j} ex={ex} color={workout.color} accent={workout.accent} />
+                ))}
+              </div>
+            </div>
+          ) : null
+        )}
 
-const maxVal = d3.max(Object.values(data));
-
-const color = d3.scaleLinear()
-  .domain([0, maxVal * 0.5, maxVal])
-  .range(["#DCEBED", "#B3C9CD", "#4F6F75"]);
-
-const svg = d3.select("#map");
-const path = d3.geoPath(d3.geoAlbersUsa().scale(900).translate([480,300]));
-
-d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us=>{
-  const states = topojson.feature(us, us.objects.states).features;
-
-  svg.selectAll("path")
-    .data(states)
-    .enter().append("path")
-    .attr("d", path)
-    .attr("fill", d=>{
-      const v = values[d.properties.name];
-      return v ? color(v) : "#F1F5F4";
-    })
-    .attr("stroke","#D1D5DB")
-    .on("mouseover", function(event, d) {
-      const v = values[d.properties.name] || 0;
-
-      d3.select(this)
-        .attr("stroke", "#111")
-        .attr("stroke-width", 2);
-
-      tooltip
-        .style("opacity", 1)
-        .html(`<strong>${d.properties.name}</strong><br>${v} contacts`);
-    })
-    .on("mousemove", function(event) {
-      tooltip
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 20) + "px");
-    })
-    .on("mouseout", function() {
-      d3.select(this)
-        .attr("stroke", "#D1D5DB")
-        .attr("stroke-width", 1);
-
-      tooltip.style("opacity", 0);
-    });
-
-  svg.append("rect")
-    .attr("x",760).attr("y",520)
-    .attr("width",60).attr("height",30)
-    .attr("fill", color(data.PR));
-
-  svg.append("text")
-    .attr("x",790).attr("y",515)
-    .attr("text-anchor","middle")
-    .style("font-size","11px")
-    .text("Puerto Rico");
-
-  svg.append("text")
-    .attr("x",790).attr("y",540)
-    .attr("text-anchor","middle")
-    .style("font-size","11px")
-    .text(data.PR);
-
-  svg.append("rect")
-    .attr("x",830).attr("y",520)
-    .attr("width",40).attr("height",30)
-    .attr("fill", color(data.VI));
-
-  svg.append("text")
-    .attr("x",850).attr("y",515)
-    .attr("text-anchor","middle")
-    .style("font-size","11px")
-    .text("VI");
-
-  svg.append("text")
-    .attr("x",850).attr("y",540)
-    .attr("text-anchor","middle")
-    .style("font-size","11px")
-    .text(data.VI);
-});
-</script>
-
-</body>
-</html>
+        {/* Footer tips */}
+        <div style={{ marginTop: 24, background: "#fff", borderRadius: 10, padding: "16px 18px", boxShadow: "0 1px 4px #0000000a" }}>
+          <p style={{ margin: "0 0 10px", fontWeight: 700, fontSize: 14, color: "#111" }}>General Guidelines</p>
+          {[
+            "Warm up 5–10 min before each session (light cardio + dynamic stretches)",
+            "Increase weight when you hit the top of the rep range for 2 sets in a row",
+            "Rest days: active recovery, walking, or light stretching — avoid full rest",
+            "Sleep 7–9 hrs and hit your protein target (0.7–1g per lb of bodyweight)",
+          ].map((tip, i) => (
+            <p key={i} style={{ margin: "6px 0 0", fontSize: 13, color: "#555", paddingLeft: 14, position: "relative" }}>
+              <span style={{ position: "absolute", left: 0, color: workout.color }}>›</span>
+              {tip}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
