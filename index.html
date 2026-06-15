@@ -351,20 +351,18 @@ function render() {
           </div>
           <p class="exercise-notes">💡 ${ex.notes}</p>
         </div>
-        ${ytUrl ? `
+        ${videoId ? `
         <div class="video-section">
-          <a href="${ytUrl}" target="_blank" rel="noopener noreferrer" class="video-link">
-            <div class="thumb-wrap">
-              <img src="${thumbUrl}" alt="${ex.name} demo" />
-              <div class="play-overlay">
-                <div class="play-btn">▶</div>
-              </div>
-            </div>
-            <div class="video-footer">
-              <span class="video-footer-label" style="color:${color}">Watch on YouTube</span>
-              <span class="video-footer-hint">Opens in browser →</span>
-            </div>
-          </a>
+          <div style="position:relative; padding-bottom:56.25%; height:0;">
+            <iframe
+              src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1"
+              title="${ex.name} demo"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              style="position:absolute; top:0; left:0; width:100%; height:100%;">
+            </iframe>
+          </div>
         </div>` : ""}
       </div>
     `;
